@@ -16,15 +16,25 @@
                 <!-- <p class="jumbotron"> Vous êtes connecté en tant que {{user}}</p> -->
                 
                 <p class="jumbotron"> Login : <input type="text" v-model="user"/> Vous êtes connecté en tant que {{user}}</p>
-
             </div>
-            <h1 class="display-4">Produits dispnibles</h1>
-            <div class="row">
-                <div class="col-3" v-for="produit in produits">
 
+            <h1 class="display-4" v-if="commandes.length>0">Produits commandés</h1>
+            <div class="row">
+                <fiche-produit v-for="commande in commandes" v-bind:nom="commande" role="recap"></fiche-produit>
+            </div>
+            <!-- <ul>
+                <li v-for="commande in commandes">{{commande}}</li>
+            </ul> -->
+
+            <h1 v-bin:class="affichage" class="display-4">Produits disponibles</h1>
+            <div class="row">
+
+                <fiche-produit v-for="produit in produits" v-bind:nom="produit" v-on:commande-passee="commander" role="commande"></fiche-produit>
+
+                <div class="col-3" v-for="produit in produits">
                     <p class="jumbotron">
                         {{produit}} <br>
-                        <button v-on:click="commander(produit)">Commander !</button>
+                        <button v-on:click="commander(nom)">Commander !</button>
                     </p>
 
                 </div>
@@ -34,16 +44,35 @@
 
 
     <script>
+
+        Vue.component('fiche-produit', {
+            template: `
+            <div class="col-3">
+                <p class="jumbotron">{{nom}} <br>
+                    <button v-on:click="passer_commande(nom)" v-if="role=='commande' ">Commander !</button>
+                </p>
+            </div>
+            `,
+            props: ['nom', 'role'],
+            methods:{
+                passer_commande: function(produit){
+                    this.$emit('commande-passee', produit)
+
+                }
+            }
+        })
+
         var app = new Vue({
             el: "#app",
             data: {
                 user : "Marine",
                 produits: ["Pizza", "Hamburger", "Cheeseburger", "Tacos"],
-                commandes: []
+                commandes: [],
+                affichage: "display-1"
             },
             methods:{
                 commander: function(produit){
-                    console.log(produit)
+                    this.commandes.push(produit)
                 }
             }
         })
